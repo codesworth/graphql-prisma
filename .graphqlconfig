@@ -1,9 +1,9 @@
 {
   "projects": {
-    "gql-prisma": {
-      "schemaPath": "/src/generated/prisma.graphql",
+    "prisma": {
+      "schemaPath": "src/generated/prisma.graphql",
       "extensions": {
-        "endPoint": {
+        "endpoints": {
           "default": "http://localhost:4466"
         }
       }
