@@ -5,57 +5,59 @@ const prisma = new Prisma({
   endpoint: "http://localhost:4466"
 });
 
-const createPostForUser = async (authorID, data) => {
-  const userExist = await prisma.exists.User({
-    id: authorID
-  });
+export { prisma as default };
 
-  if (!userExist) {
-    throw new Error("User Does not Exist");
-  }
-  const post = await prisma.mutation.createPost(
-    {
-      data: {
-        ...data,
-        author: {
-          connect: {
-            id: authorID
-          }
-        }
-      }
-    },
-    "{id title body published author{name}}"
-  );
-  return post;
-};
+// const createPostForUser = async (authorID, data) => {
+//   const userExist = await prisma.exists.User({
+//     id: authorID
+//   });
 
-createPostForUser("jug2zt3o000o0841dep2u4o1", {
-  title: "Man on Mission",
-  body: "Golden Fucking State",
-  published: true
-})
-  .then(data => log(data))
-  .catch(e => log(e));
+//   if (!userExist) {
+//     throw new Error("User Does not Exist");
+//   }
+//   const post = await prisma.mutation.createPost(
+//     {
+//       data: {
+//         ...data,
+//         author: {
+//           connect: {
+//             id: authorID
+//           }
+//         }
+//       }
+//     },
+//     "{id title body published author{name}}"
+//   );
+//   return post;
+// };
 
-prisma.exists
-  .Comment({
-    id: "cjug37x0500600841xu5fxbem"
-  })
-  .then(bool => log(bool));
+// createPostForUser("jug2zt3o000o0841dep2u4o1", {
+//   title: "Man on Mission",
+//   body: "Golden Fucking State",
+//   published: true
+// })
+//   .then(data => log(data))
+//   .catch(e => log(e));
 
-const updatePost = async (postID, data) => {
-  const post = await prisma.mutation.updatePost(
-    {
-      where: {
-        id: postID
-      },
-      data
-    },
-    "{id title author{name email}}"
-  );
+// prisma.exists
+//   .Comment({
+//     id: "cjug37x0500600841xu5fxbem"
+//   })
+//   .then(bool => log(bool));
 
-  return post;
-};
+// const updatePost = async (postID, data) => {
+//   const post = await prisma.mutation.updatePost(
+//     {
+//       where: {
+//         id: postID
+//       },
+//       data
+//     },
+//     "{id title author{name email}}"
+//   );
+
+//   return post;
+// };
 
 // const update = updatePost("cjugcc1dq008q0841v5y64hus", {
 //   title: "Bitches Be Crazt",

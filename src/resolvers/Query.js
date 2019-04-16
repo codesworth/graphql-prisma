@@ -1,28 +1,29 @@
 const Query = {
-  me() {
-    return {
-      id: "msnsmdnkdksdm",
-      name: "Jerry Poona",
-      age: 45,
-      email: "Addon Save"
-    };
-  },
   comments(parent, args, { db }, info) {
     return db.comments;
   },
 
-  posts(parent, args, { db }, info) {
-    return db.posts;
+  posts(parent, args, { prisma }, info) {
+    // return db.posts;
+    return prisma.query.posts(null, info);
   },
 
-  users(parent, args, ctx, info) {
-    console.log(ctx);
-    if (!args.query) {
-      return ctx.db.users;
+  users(parent, args, { prisma }, info) {
+    const opArgs = {};
+
+    if (args.query) {
+      opArgs.where = {
+        name_contains: args.query
+      };
     }
-    return ctx.db.users.filter(x => {
-      return x.name.toLowerCase().includes(args.query.toLowerCase());
-    });
+    return prisma.query.users(opArgs, info);
+    // console.log(ctx);
+    // if (!args.query) {
+    //   return ctx.db.users;
+    // }
+    // return ctx.db.users.filter(x => {
+    //   return x.name.toLowerCase().includes(args.query.toLowerCase());
+    // });
   }
 };
 
