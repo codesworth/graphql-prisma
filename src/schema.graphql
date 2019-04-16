@@ -24,7 +24,6 @@ input PostUpdateInput {
 input UserInput {
   name: String!
   email: String
-  age: Int!
 }
 
 input PostInput {
@@ -46,9 +45,8 @@ input CommentUpdateInput {
 
 type Query {
   users(query: String): [User!]!
-  me: User!
-  posts: [Post!]!
-  comments: [Comment!]!
+  posts(query: String): [Post!]!
+  comments(query: String): [Comment!]!
 }
 
 type User {
