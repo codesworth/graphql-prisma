@@ -1,6 +1,17 @@
 const Query = {
-  comments(parent, args, { db }, info) {
-    return db.comments;
+  comments(parent, args, { db, prisma }, info) {
+    const opArgs = {};
+    if (args.query) {
+      opArgs.where = {
+        OR: [
+          {
+            text_contains: args.query
+          }
+        ]
+      };
+    }
+
+    return prisma.query.comments(opArgs, info);
   },
 
   posts(parent, args, { prisma }, info) {

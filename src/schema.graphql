@@ -30,7 +30,7 @@ input PostInput {
   title: String!
   body: String!
   published: Boolean!
-  poster: ID!
+  author: ID!
 }
 
 input CommentInput {
@@ -69,7 +69,7 @@ type Post {
   published: Boolean
   title: String
   body: String
-  poster: User!
+  author: User!
   comments: [Comment!]!
 }
 

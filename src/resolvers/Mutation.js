@@ -1,43 +1,42 @@
 import uuidv4 from "uuid/v4";
 
 const Mutation = {
-  createUser(parent, args, { db }, info) {
-    console.log(args);
-    const emailtaken = db.users.some(x => x.email === args.email);
+  async createUser(parent, args, { db, prisma }, info) {
+    const emailtaken = await prisma.exists.User({ email: args.data.email });
     if (emailtaken) {
-      throw new Error("Email is already taken");
+      throw new Error("User exist with this email");
     }
 
-    const user = {
-      id: uuidv4(),
-      ...args.data
-    };
-
-    db.users.push(user);
-
-    return user;
+    return await prisma.mutation.createUser({ data: args.data }, info);
   },
 
-  deleteUser(parent, args, { db }, info) {
-    const index = db.users.findIndex(x => x.id === args.id);
-    if (index < 0) {
-      throw new Error("User does not exist");
+  async deleteUser(parent, args, { prisma }, info) {
+    const userExist = prisma.exists.User({ id: args.id });
+
+    if (!userExist) {
+      throw new Error("User Does not Exist");
     }
 
-    const user = db.users.splice(index, 1);
-    db.posts = db.posts.filter(post => {
-      const authored = post.poster === args.id;
-      if (authored) {
-        db.comments = db.comments.filter(comment => {
-          return comment.post !== post.id;
-        });
-      }
-      return !authored;
-    });
+    return await prisma.mutation.deleteUser({ where: { id: args.id } }, info);
+    // const index = db.users.findIndex(x => x.id === args.id);
+    // if (index < 0) {
+    //   throw new Error("User does not exist");
+    // }
 
-    db.comments = db.comments.filter(comment => {
-      comment.commentor !== args.id;
-    });
+    // const user = db.users.splice(index, 1);
+    // db.posts = db.posts.filter(post => {
+    //   const authored = post.poster === args.id;
+    //   if (authored) {
+    //     db.comments = db.comments.filter(comment => {
+    //       return comment.post !== post.id;
+    //     });
+    //   }
+    //   return !authored;
+    // });
+
+    // db.comments = db.comments.filter(comment => {
+    //   comment.commentor !== args.id;
+    // });
 
     return user[0];
   },
