@@ -41,53 +41,82 @@ const Mutation = {
     return user[0];
   },
 
-  updateUser(parent, { id, data }, { db }, info) {
-    const user = db.users.find(x => x.id === id);
+  async updateUser(parent, args, { prisma }, info) {
+    return await prisma.mutation.updateUser(
+      {
+        where: {
+          id: args.id
+        },
+        data: args.data
+      },
+      info
+    );
+    // const user = db.users.find(x => x.id === id);
 
-    if (!user) {
-      throw new Error("User Not Found");
-    }
+    // if (!user) {
+    //   throw new Error("User Not Found");
+    // }
 
-    if (typeof data.email === "string") {
-      const emailtaken = db.users.some(x => x.email === data.email);
+    // if (typeof data.email === "string") {
+    //   const emailtaken = db.users.some(x => x.email === data.email);
 
-      if (emailtaken) {
-        throw new Error("Email already in use");
-      }
+    //   if (emailtaken) {
+    //     throw new Error("Email already in use");
+    //   }
 
-      user.email = data.email;
-    }
+    //   user.email = data.email;
+    // }
 
-    if (typeof data.name === "string") {
-      user.name = data.name;
-    }
+    // if (typeof data.name === "string") {
+    //   user.name = data.name;
+    // }
 
-    if (typeof data.age !== "undefined") {
-      user.age = data.age;
-    }
+    // if (typeof data.age !== "undefined") {
+    //   user.age = data.age;
+    // }
 
-    return user;
+    //return user;
   },
 
-  createPost(parent, args, { db, pubsub }, info) {
-    const userExist = db.users.some(x => x.id === args.data.poster);
+  async createPost(parent, args, { prisma }, info) {
+    const userExist = await prisma.exists.User({ id: args.data.author });
+
     if (!userExist) {
-      throw new Error("User Not Founds");
+      throw new Error("User does not Exists");
     }
+    return await prisma.mutation.createPost(
+      {
+        data: {
+          title: args.data.title,
+          body: args.data.body,
+          published: args.data.published,
+          author: {
+            connect: {
+              id: args.data.author
+            }
+          }
+        }
+      },
+      info
+    );
 
-    const newPost = {
-      id: uuidv4(),
-      ...args.data
-    };
+    // if (!userExist) {
+    //   throw new Error("User Not Founds");
+    // }
 
-    db.posts.push(newPost);
-    pubsub.publish("post", {
-      post: {
-        mutation: "CREATED",
-        data: newPost
-      }
-    });
-    return newPost;
+    // const newPost = {
+    //   id: uuidv4(),
+    //   ...args.data
+    // };
+
+    // db.posts.push(newPost);
+    // pubsub.publish("post", {
+    //   post: {
+    //     mutation: "CREATED",
+    //     data: newPost
+    //   }
+    // });
+    // return newPost;
   },
 
   updatePost(parent, { id, data }, { db, pubsub }, info) {
