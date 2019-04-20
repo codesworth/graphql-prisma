@@ -1,5 +1,5 @@
 # source: http://localhost:4466
-# timestamp: Sun Apr 14 2019 00:02:11 GMT+0000 (Greenwich Mean Time)
+# timestamp: Sat Apr 20 2019 23:28:02 GMT+0000 (Greenwich Mean Time)
 
 type AggregateComment {
   count: Int!
@@ -38,8 +38,13 @@ type CommentConnection {
 input CommentCreateInput {
   id: ID
   text: String!
-  commentor: UserCreateOneInput!
+  commentor: UserCreateOneWithoutCommentsInput!
   post: PostCreateOneWithoutCommentsInput!
+}
+
+input CommentCreateManyWithoutCommentorInput {
+  create: [CommentCreateWithoutCommentorInput!]
+  connect: [CommentWhereUniqueInput!]
 }
 
 input CommentCreateManyWithoutPostInput {
@@ -47,10 +52,16 @@ input CommentCreateManyWithoutPostInput {
   connect: [CommentWhereUniqueInput!]
 }
 
+input CommentCreateWithoutCommentorInput {
+  id: ID
+  text: String!
+  post: PostCreateOneWithoutCommentsInput!
+}
+
 input CommentCreateWithoutPostInput {
   id: ID
   text: String!
-  commentor: UserCreateOneInput!
+  commentor: UserCreateOneWithoutCommentsInput!
 }
 
 """An edge in a connection."""
@@ -208,7 +219,7 @@ input CommentSubscriptionWhereInput {
 
 input CommentUpdateInput {
   text: String
-  commentor: UserUpdateOneRequiredInput
+  commentor: UserUpdateOneRequiredWithoutCommentsInput
   post: PostUpdateOneRequiredWithoutCommentsInput
 }
 
@@ -218,6 +229,18 @@ input CommentUpdateManyDataInput {
 
 input CommentUpdateManyMutationInput {
   text: String
+}
+
+input CommentUpdateManyWithoutCommentorInput {
+  create: [CommentCreateWithoutCommentorInput!]
+  connect: [CommentWhereUniqueInput!]
+  set: [CommentWhereUniqueInput!]
+  disconnect: [CommentWhereUniqueInput!]
+  delete: [CommentWhereUniqueInput!]
+  update: [CommentUpdateWithWhereUniqueWithoutCommentorInput!]
+  updateMany: [CommentUpdateManyWithWhereNestedInput!]
+  deleteMany: [CommentScalarWhereInput!]
+  upsert: [CommentUpsertWithWhereUniqueWithoutCommentorInput!]
 }
 
 input CommentUpdateManyWithoutPostInput {
@@ -237,14 +260,30 @@ input CommentUpdateManyWithWhereNestedInput {
   data: CommentUpdateManyDataInput!
 }
 
+input CommentUpdateWithoutCommentorDataInput {
+  text: String
+  post: PostUpdateOneRequiredWithoutCommentsInput
+}
+
 input CommentUpdateWithoutPostDataInput {
   text: String
-  commentor: UserUpdateOneRequiredInput
+  commentor: UserUpdateOneRequiredWithoutCommentsInput
+}
+
+input CommentUpdateWithWhereUniqueWithoutCommentorInput {
+  where: CommentWhereUniqueInput!
+  data: CommentUpdateWithoutCommentorDataInput!
 }
 
 input CommentUpdateWithWhereUniqueWithoutPostInput {
   where: CommentWhereUniqueInput!
   data: CommentUpdateWithoutPostDataInput!
+}
+
+input CommentUpsertWithWhereUniqueWithoutCommentorInput {
+  where: CommentWhereUniqueInput!
+  update: CommentUpdateWithoutCommentorDataInput!
+  create: CommentCreateWithoutCommentorInput!
 }
 
 input CommentUpsertWithWhereUniqueWithoutPostInput {
@@ -360,24 +399,24 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
+  createUser(data: UserCreateInput!): User!
   createPost(data: PostCreateInput!): Post!
   createComment(data: CommentCreateInput!): Comment!
-  createUser(data: UserCreateInput!): User!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updatePost(data: PostUpdateInput!, where: PostWhereUniqueInput!): Post
   updateComment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  deleteUser(where: UserWhereUniqueInput!): User
   deletePost(where: PostWhereUniqueInput!): Post
   deleteComment(where: CommentWhereUniqueInput!): Comment
-  deleteUser(where: UserWhereUniqueInput!): User
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertPost(where: PostWhereUniqueInput!, create: PostCreateInput!, update: PostUpdateInput!): Post!
   upsertComment(where: CommentWhereUniqueInput!, create: CommentCreateInput!, update: CommentUpdateInput!): Comment!
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   updateManyPosts(data: PostUpdateManyMutationInput!, where: PostWhereInput): BatchPayload!
   updateManyComments(data: CommentUpdateManyMutationInput!, where: CommentWhereInput): BatchPayload!
-  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
   deleteManyPosts(where: PostWhereInput): BatchPayload!
   deleteManyComments(where: CommentWhereInput): BatchPayload!
-  deleteManyUsers(where: UserWhereInput): BatchPayload!
   executeRaw(database: PrismaDatabase, query: String!): Json!
 }
 
@@ -887,15 +926,15 @@ enum PrismaDatabase {
 }
 
 type Query {
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post]!
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment]!
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  user(where: UserWhereUniqueInput!): User
   post(where: PostWhereUniqueInput!): Post
   comment(where: CommentWhereUniqueInput!): Comment
-  user(where: UserWhereUniqueInput!): User
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   postsConnection(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PostConnection!
   commentsConnection(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CommentConnection!
-  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -905,16 +944,18 @@ type Query {
 }
 
 type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   post(where: PostSubscriptionWhereInput): PostSubscriptionPayload
   comment(where: CommentSubscriptionWhereInput): CommentSubscriptionPayload
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
 }
 
 type User implements Node {
   id: ID!
   name: String!
   email: String!
+  password: String!
   posts(where: PostWhereInput, orderBy: PostOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Post!]
+  comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
 }
 
 """A connection to a list of items."""
@@ -931,11 +972,13 @@ input UserCreateInput {
   id: ID
   name: String!
   email: String!
+  password: String!
   posts: PostCreateManyWithoutAuthorInput
+  comments: CommentCreateManyWithoutCommentorInput
 }
 
-input UserCreateOneInput {
-  create: UserCreateInput
+input UserCreateOneWithoutCommentsInput {
+  create: UserCreateWithoutCommentsInput
   connect: UserWhereUniqueInput
 }
 
@@ -944,10 +987,20 @@ input UserCreateOneWithoutPostsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateWithoutCommentsInput {
+  id: ID
+  name: String!
+  email: String!
+  password: String!
+  posts: PostCreateManyWithoutAuthorInput
+}
+
 input UserCreateWithoutPostsInput {
   id: ID
   name: String!
   email: String!
+  password: String!
+  comments: CommentCreateManyWithoutCommentorInput
 }
 
 """An edge in a connection."""
@@ -966,6 +1019,8 @@ enum UserOrderByInput {
   name_DESC
   email_ASC
   email_DESC
+  password_ASC
+  password_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -976,6 +1031,7 @@ type UserPreviousValues {
   id: ID!
   name: String!
   email: String!
+  password: String!
 }
 
 type UserSubscriptionPayload {
@@ -1015,28 +1071,25 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
-input UserUpdateDataInput {
-  name: String
-  email: String
-  posts: PostUpdateManyWithoutAuthorInput
-}
-
 input UserUpdateInput {
   name: String
   email: String
+  password: String
   posts: PostUpdateManyWithoutAuthorInput
+  comments: CommentUpdateManyWithoutCommentorInput
 }
 
 input UserUpdateManyMutationInput {
   name: String
   email: String
+  password: String
 }
 
-input UserUpdateOneRequiredInput {
-  create: UserCreateInput
+input UserUpdateOneRequiredWithoutCommentsInput {
+  create: UserCreateWithoutCommentsInput
   connect: UserWhereUniqueInput
-  update: UserUpdateDataInput
-  upsert: UserUpsertNestedInput
+  update: UserUpdateWithoutCommentsDataInput
+  upsert: UserUpsertWithoutCommentsInput
 }
 
 input UserUpdateOneRequiredWithoutPostsInput {
@@ -1046,14 +1099,23 @@ input UserUpdateOneRequiredWithoutPostsInput {
   upsert: UserUpsertWithoutPostsInput
 }
 
+input UserUpdateWithoutCommentsDataInput {
+  name: String
+  email: String
+  password: String
+  posts: PostUpdateManyWithoutAuthorInput
+}
+
 input UserUpdateWithoutPostsDataInput {
   name: String
   email: String
+  password: String
+  comments: CommentUpdateManyWithoutCommentorInput
 }
 
-input UserUpsertNestedInput {
-  update: UserUpdateDataInput!
-  create: UserCreateInput!
+input UserUpsertWithoutCommentsInput {
+  update: UserUpdateWithoutCommentsDataInput!
+  create: UserCreateWithoutCommentsInput!
 }
 
 input UserUpsertWithoutPostsInput {
@@ -1190,9 +1252,52 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   email_not_ends_with: String
+  password: String
+
+  """All values that are not equal to given value."""
+  password_not: String
+
+  """All values that are contained in given list."""
+  password_in: [String!]
+
+  """All values that are not contained in given list."""
+  password_not_in: [String!]
+
+  """All values less than the given value."""
+  password_lt: String
+
+  """All values less than or equal the given value."""
+  password_lte: String
+
+  """All values greater than the given value."""
+  password_gt: String
+
+  """All values greater than or equal the given value."""
+  password_gte: String
+
+  """All values containing the given string."""
+  password_contains: String
+
+  """All values not containing the given string."""
+  password_not_contains: String
+
+  """All values starting with the given string."""
+  password_starts_with: String
+
+  """All values not starting with the given string."""
+  password_not_starts_with: String
+
+  """All values ending with the given string."""
+  password_ends_with: String
+
+  """All values not ending with the given string."""
+  password_not_ends_with: String
   posts_every: PostWhereInput
   posts_some: PostWhereInput
   posts_none: PostWhereInput
+  comments_every: CommentWhereInput
+  comments_some: CommentWhereInput
+  comments_none: CommentWhereInput
 }
 
 input UserWhereUniqueInput {
