@@ -1,7 +1,7 @@
 type Mutation {
   createUser(data: UserInput): AuthPayload!
   deleteUser(id: ID): User!
-  updateUser(id: ID, data: UserUpdateInput!): User!
+  updateUser(data: UserUpdateInput!): User!
   createPost(data: PostInput): Post!
   deletePost(id: ID): Post!
   updatePost(id: ID, data: PostUpdateInput): Post!

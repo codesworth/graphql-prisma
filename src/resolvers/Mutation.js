@@ -96,11 +96,13 @@ const Mutation = {
     //return user[0];
   },
 
-  async updateUser(parent, args, { prisma }, info) {
+  async updateUser(parent, args, { prisma, request }, info) {
+    const userId = getUserID(request);
+
     return await prisma.mutation.updateUser(
       {
         where: {
-          id: args.id
+          id: userId
         },
         data: args.data
       },
