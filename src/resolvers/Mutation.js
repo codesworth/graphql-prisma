@@ -1,13 +1,34 @@
-import uuidv4 from "uuid/v4";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const token = jwt.sign({ id: 46 }, "mysecret");
+console.log(token);
+
+const decoded = jwt.verify(token, "mysecrets");
+console.log(decoded);
 
 const Mutation = {
   async createUser(parent, args, { db, prisma }, info) {
-    const emailtaken = await prisma.exists.User({ email: args.data.email });
-    if (emailtaken) {
-      throw new Error("User exist with this email");
+    // const emailtaken = await prisma.exists.User({ email: args.data.email });
+    // if (emailtaken) {
+    //   throw new Error("User exist with this email");
+    // }
+
+    if (args.data.password.trim().length < 6) {
+      throw new Error("Passowrd is not strong enough");
     }
 
-    return await prisma.mutation.createUser({ data: args.data }, info);
+    const password = await bcrypt.hash(args.data.password, 10);
+
+    return await prisma.mutation.createUser(
+      {
+        data: {
+          ...args.data,
+          password
+        }
+      },
+      info
+    );
   },
 
   async deleteUser(parent, args, { prisma }, info) {

@@ -23,7 +23,8 @@ input PostUpdateInput {
 
 input UserInput {
   name: String!
-  email: String
+  email: String!
+  password: String!
 }
 
 input PostInput {
