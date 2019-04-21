@@ -65,14 +65,14 @@ const Mutation = {
     };
   },
 
-  async deleteUser(parent, args, { prisma }, info) {
-    const userExist = prisma.exists.User({ id: args.id });
+  async deleteUser(parent, args, { prisma, request }, info) {
+    // const userExist = prisma.exists.User({ id: args.id });
 
-    if (!userExist) {
-      throw new Error("User Does not Exist");
-    }
-
-    return await prisma.mutation.deleteUser({ where: { id: args.id } }, info);
+    // if (!userExist) {
+    //   throw new Error("User Does not Exist");
+    // }
+    const id = getUserID(request);
+    return await prisma.mutation.deleteUser({ where: { id: id } }, info);
     // const index = db.users.findIndex(x => x.id === args.id);
     // if (index < 0) {
     //   throw new Error("User does not exist");
