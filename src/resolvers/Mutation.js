@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import getUserID from "../Utils/getUserID";
-import { JWT_SECRET } from "../Utils/Constants";
+import { createAuthTokenFor } from "../Utils/Token";
 
 // const token = jwt.sign({ id: 46 }, "mysecret");
 // console.log(token);
@@ -31,7 +30,7 @@ const Mutation = {
 
     return {
       user,
-      token: jwt.sign({ userId: user.id }, JWT_SECRET)
+      token: createAuthTokenFor(user.id)
     };
   },
 
@@ -56,12 +55,7 @@ const Mutation = {
 
     return {
       user,
-      token: jwt.sign(
-        {
-          userId: user.id
-        },
-        JWT_SECRET
-      )
+      token: createAuthTokenFor(user.id)
     };
   },
 
