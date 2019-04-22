@@ -96,6 +96,7 @@ enum MutationType {
 type Subscription {
   comment(postId: ID!): ComentSubscriptionPayload!
   post: PostSubscriptionPayload!
+  mypost: PostSubscriptionPayload!
 }
 
 type PostSubscriptionPayload {
