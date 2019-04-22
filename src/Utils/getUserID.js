@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "./Constants";
 
 const getUserID = (request, requireAuth = true) => {
-  const header = request.request.headers.authorization;
+  const header = request.request
+    ? request.request.headers.authorization
+    : request.connection.context.Authorization;
+
   //console.log(request.request);
 
   if (header) {
