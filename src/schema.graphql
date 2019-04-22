@@ -47,7 +47,6 @@ input PostInput {
 input CommentInput {
   text: String!
   post: ID!
-  commentor: ID!
 }
 
 input CommentUpdateInput {
