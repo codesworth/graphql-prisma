@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import getUserID from "../Utils/getUserID";
-import { createAuthTokenFor } from "../Utils/Token";
+import { createAuthTokenFor, hashPassword } from "../Utils/Helper";
 
 // const token = jwt.sign({ id: 46 }, "mysecret");
 // console.log(token);
@@ -15,11 +15,7 @@ const Mutation = {
     //   throw new Error("User exist with this email");
     // }
 
-    if (args.data.password.trim().length < 6) {
-      throw new Error("Passowrd is not strong enough");
-    }
-
-    const password = await bcrypt.hash(args.data.password, 10);
+    const password = await hashPassword(args.data.password);
 
     const user = await prisma.mutation.createUser({
       data: {
@@ -92,6 +88,11 @@ const Mutation = {
 
   async updateUser(parent, args, { prisma, request }, info) {
     const userId = getUserID(request);
+
+    if (typeof args.data.password === "string") {
+      const password = await hashPassword(args.data.password);
+      args.data.password = password;
+    }
 
     return await prisma.mutation.updateUser(
       {

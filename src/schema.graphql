@@ -19,6 +19,7 @@ type AuthPayload {
 input UserUpdateInput {
   name: String
   email: String
+  password: String
 }
 
 input PostUpdateInput {
