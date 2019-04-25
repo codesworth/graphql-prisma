@@ -1,3 +1,5 @@
+# import UserOrderByInput fom './generated/prisma.graphql'
+
 type Mutation {
   createUser(data: UserInput): AuthPayload!
   deleteUser: User!
@@ -55,7 +57,13 @@ input CommentUpdateInput {
 }
 
 type Query {
-  users(query: String, first: Int, skip: Int, after: String): [User!]!
+  users(
+    query: String
+    first: Int
+    skip: Int
+    after: String
+    orderBy: UserOrderByInput
+  ): [User!]!
   posts(query: String, first: Int, skip: Int, after: String): [Post!]!
   comments(query: String): [Comment!]!
   post(id: ID): Post
@@ -70,6 +78,8 @@ type User {
   password: String!
   posts: [Post!]!
   comments: [Comment]
+  createdAt: String!
+  updatedAt: String!
 }
 
 type Comment {
